@@ -1,113 +1,81 @@
-jQuery(function($) {'use strict';
 
-	//Responsive Nav
-	$('li.dropdown').find('.fa-angle-down').each(function(){
-		$(this).on('click', function(){
-			if( $(window).width() < 768 ) {
-				$(this).parent().next().slideToggle();
-			}
-			return false;
-		});
-	});
-
-	//Fit Vids
-	if( $('#video-container').length ) {
-		$("#video-container").fitVids();
-	}
+jQuery(function($) {
 
 	//Initiat WOW JS
 	new WOW().init();
 
-	// portfolio filter
-	$(window).load(function(){
+    // one page navigation 
+    $('.main-navigation').onePageNav({
+            currentClass: 'active'
+    });
 
-		$('.main-slider').addClass('animate-in');
-		$('.preloader').remove();
-		//End Preloader
-
-		if( $('.masonery_area').length ) {
-			$('.masonery_area').masonry();//Masonry
-		}
-
-		var $portfolio_selectors = $('.portfolio-filter >li>a');
-		
-		if($portfolio_selectors.length) {
-			
-			var $portfolio = $('.portfolio-items');
-			$portfolio.isotope({
-				itemSelector : '.portfolio-item',
-				layoutMode : 'fitRows'
+    // Countdown
+	$('#counter').bind('inview', function(event, visible, visiblePartX, visiblePartY) {
+		if (visible) {
+			$(this).find('.timer').each(function () {
+				var $this = $(this);
+				$({ Counter: 0 }).animate({ Counter: $this.text() }, {
+					duration: 2000,
+					easing: 'swing',
+					step: function () {
+						$this.text(Math.ceil(this.Counter));
+					}
+				});
 			});
-			
-			$portfolio_selectors.on('click', function(){
-				$portfolio_selectors.removeClass('active');
-				$(this).addClass('active');
-				var selector = $(this).attr('data-filter');
-				$portfolio.isotope({ filter: selector });
-				return false;
-			});
+			$(this).unbind('inview');
 		}
-
 	});
 
 
-	$('.timer').each(count);
-	function count(options) {
-		var $this = $(this);
-		options = $.extend({}, options || {}, $this.data('countToOptions') || {});
-		$this.countTo(options);
+/**
+ * main.js
+ * http://www.codrops.com
+ *
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ * 
+ * Copyright 2014, Codrops
+ * http://www.codrops.com
+ */
+(function() {
+
+	var bodyEl = document.body,
+		content = document.querySelector( '.contents' ),
+		openbtn = document.getElementById( 'open-button' ),
+		closebtn = document.getElementById( 'close-button' ),
+		isOpen = false;
+
+	function init() {
+		initEvents();
 	}
-		
-	// Search
-	$('.fa-search').on('click', function() {
-		$('.field-toggle').fadeToggle(200);
-	});
 
-	// Contact form
-	var form = $('#main-contact-form');
-	form.submit(function(event){
-		event.preventDefault();
-		var form_status = $('<div class="form_status"></div>');
-		$.ajax({
-			url: $(this).attr('action'),
-			beforeSend: function(){
-				form.prepend( form_status.html('<p><i class="fa fa-spinner fa-spin"></i> Email is sending...</p>').fadeIn() );
+	function initEvents() {
+		openbtn.addEventListener( 'click', toggleMenu );
+		if( closebtn ) {
+			closebtn.addEventListener( 'click', toggleMenu );
+		}
+
+		// close the menu element if the target it´s not the menu element or one of its descendants..
+		content.addEventListener( 'click', function(ev) {
+			var target = ev.target;
+			if( isOpen && target !== openbtn ) {
+				toggleMenu();
 			}
-		}).done(function(data){
-			form_status.html('<p class="text-success">Thank you for contact us. As early as possible  we will contact you</p>').delay(3000).fadeOut();
-		});
-	});
-
-	// Progress Bar
-	$.each($('div.progress-bar'),function(){
-		$(this).css('width', $(this).attr('data-transition')+'%');
-	});
-
-	if( $('#gmap').length ) {
-		var map;
-
-		map = new GMaps({
-			el: '#gmap',
-			lat: 43.04446,
-			lng: -76.130791,
-			scrollwheel:false,
-			zoom: 16,
-			zoomControl : false,
-			panControl : false,
-			streetViewControl : false,
-			mapTypeControl: false,
-			overviewMapControl: false,
-			clickable: false
-		});
-
-		map.addMarker({
-			lat: 43.04446,
-			lng: -76.130791,
-			animation: google.maps.Animation.DROP,
-			verticalAlign: 'bottom',
-			horizontalAlign: 'center',
-			backgroundColor: '#3e8bff',
-		});
+		} );
 	}
+
+	function toggleMenu() {
+		if( isOpen ) {
+			classie.remove( bodyEl, 'show-menu' );
+		}
+		else {
+			classie.add( bodyEl, 'show-menu' );
+		}
+		isOpen = !isOpen;
+	}
+
+	init();
+
+})();
 
 });
